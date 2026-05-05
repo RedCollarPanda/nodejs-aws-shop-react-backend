@@ -19,17 +19,28 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1042.0",
+    "@aws-sdk/lib-dynamodb": "^3.1042.0",
     "aws-cdk-lib": "^2.251.0",
     "constructs": "^10.4.2",
     "source-map-support": "^0.5.21"
   },
   "jest": {
     "testEnvironment": "node",
-    "roots": ["<rootDir>/test"],
+    "roots": [
+      "<rootDir>/test"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.tsx?$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }
