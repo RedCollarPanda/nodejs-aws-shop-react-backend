@@ -4,6 +4,7 @@ import * as s3n from "aws-cdk-lib/aws-s3-notifications";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as sqs from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 import * as path from "path";
 
@@ -40,6 +41,11 @@ export class ImportServiceStack extends cdk.Stack {
 
     this.bucket.grantPut(importProductsFile, "uploaded/*");
 
+    const catalogItemsQueue = sqs.Queue.fromQueueAttributes(this, "CatalogItemsQueue", {
+      queueUrl: cdk.Fn.importValue("CatalogItemsQueueUrl"),
+      queueArn: cdk.Fn.importValue("CatalogItemsQueueArn"),
+    });
+
     const importFileParser = new nodejs.NodejsFunction(this, "ImportFileParser", {
       runtime: lambda.Runtime.NODEJS_22_X,
       entry: path.join(__dirname, "../src/handlers/importFileParser.ts"),
@@ -48,12 +54,14 @@ export class ImportServiceStack extends cdk.Stack {
       bundling: { forceDockerBundling: false },
       environment: {
         BUCKET_NAME: this.bucket.bucketName,
+        SQS_QUEUE_URL: catalogItemsQueue.queueUrl,
       },
     });
 
     this.bucket.grantRead(importFileParser, "uploaded/*");
     this.bucket.grantPut(importFileParser, "parsed/*");
     this.bucket.grantDelete(importFileParser, "uploaded/*");
+    catalogItemsQueue.grantSendMessages(importFileParser);
 
     this.bucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
