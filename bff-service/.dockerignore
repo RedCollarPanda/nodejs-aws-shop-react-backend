@@ -1,0 +1,21 @@
+# node_modules — reinstalled inside the container
+node_modules
+
+# dist — compiled output, recreated by `npm run build` inside the container
+dist
+
+# .git — version control history, irrelevant inside the container
+.git
+
+# test — test files are not needed in production image
+test
+
+# .elasticbeanstalk — EB CLI config, deployment metadata only
+.elasticbeanstalk
+
+# *.md — documentation files, not needed at runtime
+*.md
+
+# .env.example — example env file, real env vars are injected at runtime
+.env.example
+.env
